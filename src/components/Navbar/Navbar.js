@@ -8,10 +8,10 @@ const Navbar = () => {
   let subbase = pathname.split("/")?.[1] || "Dashboard";
 
   function Lankness(type = null) {
-    let classes = "px-4 py-4 rounded inline-flex ";
+    let classes = "px-4 py-2 rounded inline-flex ";
 
     if (type === subbase) {
-      classes += "bg-red text-white no-underline";
+      classes += "bg-red text-white no-underline  text-center";
     } else {
       classes += "";
     }
@@ -30,23 +30,23 @@ const Navbar = () => {
           </li>
 
           <li>
-            <Link to="/Booking" className={Lankness("Booking")}>
-              Booking
+            <Link to="/Users" className={Lankness("Users")}>
+              Users
             </Link>
           </li>
           <li>
             <Link to="/Booking" className={Lankness("Booking")}>
-              Booking
+              Bookings
             </Link>
           </li>
           <li>
-            <Link to="/Booking" className={Lankness("Booking")}>
-              Booking
+            <Link to="/" className={Lankness("Products")}>
+              Products
             </Link>
           </li>
           <li>
-            <Link to="/Booking" className={Lankness("Booking")}>
-              Booking
+            <Link to="/" className={Lankness("Orders")}>
+              Orders
             </Link>
           </li>
         </ul>

@@ -1,21 +1,27 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Login from "../components/Login/Login";
 import Signup from "../components/Signup/Signup";
 import Home from "../Pages/Home/Home";
-import ProtectedRoute from '../Routes/ProtectedRoute'
+import ProtectedRoute from "../Routes/ProtectedRoute";
 import { UserAuthContextProvider } from "../context/UserAuthContext";
 import Navbar from "../components/Navbar/Navbar";
-
-
-
+import Users from "../components/Tabs/Users"
+import User from "../Pages/Users/User"
+import Partner from "../Pages/Users/Partner";
+import Block from "../Pages/Users/Block";
 
 const MainRoute = () => {
   return (
     <>
       <UserAuthContextProvider>
-         <Router>
-          <Navbar/>
+        <Router>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Login />} />
             <Route
@@ -26,11 +32,18 @@ const MainRoute = () => {
                 </ProtectedRoute>
               }
             />
-            
+            <Route path="Users" element={<ProtectedRoute>
+              <Users />
+            </ProtectedRoute>}>
+              <Route index element={<Navigate replace to="User" />} />
+              <Route path="User" element={<User />} />
+              <Route path="Partner" element={<Partner />} />
+              <Route path="Block" element={<Block />} />
+            </Route>
+
             <Route path="/Signup" element={<Signup />} />
           </Routes>
-        </Router> 
-       
+        </Router>
       </UserAuthContextProvider>
     </>
   );
