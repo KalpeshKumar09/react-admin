@@ -1,122 +1,289 @@
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../../firebase";
-import BookingList from "./BookingList";
-import AddBooking from "./AddBooking";
+/* import React, { useState, useEffect } from "react";
+import { BsCalendar2Date } from "react-icons/bs";
 
-const Booking = () => {
-  const [bookings, setBookings] = useState([]);
-  const [showModel, setShowModel] = useState(false);
-  const [booking, setBooking] = useState([]);
-  const [open, setOpen] = useState([]);
-  const navigate = useNavigate();
+export default function Booking() {
+  const [booking, setBooking] = useState();
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "bookings"), (snapshot) => {
-      let list = [];
-      snapshot.docs.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() });
-      });
-      setBookings(list);
-    });
-    return () => {
-      unsubscribe();
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        const data = await response.json();
+        setBooking(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
+
+    fetchData();
   }, []);
 
-  const handleModel = (item) => {
-    setOpen(true);
-    setBooking(item);
-    
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = booking.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(booking.length / itemsPerPage);
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure to delete that booking")) {
-      try {
-        setOpen(false);
-        await deleteDoc(doc(db, "bookings", id));
-        setBookings(bookings.filter((booking) => booking.id !== id));
-      } catch (error) {
-        console.log(error);
-      }
+  const renderPagination = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button key={i} onClick={() => handleChangePage(i)}>
+          {i}
+        </button>
+      );
     }
+    return (
+      <div className="pagination flex items-center justify-center px-3 h-8 w-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        {pageNumbers}
+      </div>
+    );
   };
+
+  const generateRandomBookingNumber = () => {
+    const length = 8;
+    const characters = "0123456789";
+    let bookingNumber = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      bookingNumber += characters.charAt(randomIndex);
+    }
+
+    return bookingNumber;
+  };
+
+  const bookingList = currentItems
+    .filter((val) => {
+      return search === "" ? val : val.name.includes(search);
+    })
+    .map((val, index) => (
+      <tr key={val.id}>
+        <td className="text-left bg-white p-3">{index + 1}</td>
+        <td className="text-left bg-white p-3">
+          {generateRandomBookingNumber()}
+        </td>
+        <td className="text-left bg-white p-3">{val.service}</td>
+        <td className="text-left bg-white p-3">{val.bookingTime}</td>
+        <td className="text-left bg-white p-3">{val.name}</td>
+        <td className="text-left bg-white p-3">{val.mobile}</td>
+        <td className="text-left bg-white p-3">{val.payment}</td>
+        <td className="text-left bg-white p-3">
+          <button className="text-white bg-green-700   font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 ">
+            Active
+          </button>
+          
+        </td>
+      </tr>
+    ));
 
   return (
-    <>
-      <div className="bg-white h-screen ">
-        <div className="flex flex-col">
-          <button
-            className=" place-self-end flex items-center gap-1 bg-gray-800 text-white py-2 px-4 mt-4 rounded-md hover:bg-gray-700 transition duration-300 ease-in-out transform hover:scale-110"
-            onClick={() => setShowModel(true)}
-          >
-            Add Booking
-          </button>
-          {showModel && <AddBooking onClose={() => setShowModel(false)} />}
-        </div>
-        <div>
-          <div className=" absolute grid px-4   grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {bookings &&
-              bookings.map((item) => (
-                <div
-                  key={item.id}
-                  className="max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-300 dark:border-gray-700"
-                >
-                  <div className="flex flex-col justify-between items-center mb-4">
-                    <img
-                      src={item.img}
-                      alt=""
-                      className="w-40 h-40 rounded-t-lg"
-                    />
-                    <h3 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {item.name}
-                    </h3>
-                  </div>
-                  <div className="p-1">
-                    {/* <button
-                      onClick={() => navigate(`/update/${item.id}`)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                    >
-                      Update
-                    </button> */}
-                    <button
-                      onClick={() => handleModel(item)}
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                      View
-                      <svg
-                        class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 14 10"
-                      >
-                        <path
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M1 5h12m0 0L9 1m4 4L9 9"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  {open && (
-                    <BookingList
-                      open={open}
-                      setOpen={setOpen}
-                      handleDelete={handleDelete}
-                      {...booking}
-                    />
-                  )}
-                </div>
-              ))}
-          </div>
-        </div>
+    <div className="details px-8 h-screen ">
+      <div className="flex justify-end p-1 gap-8">
+        <form>
+          <input
+            type="search"
+            placeholder="Search"
+            onChange={(e) => setSearch(e.target.value)}
+            className=" relative  block min-w-0 flex-auto rounded border-2 border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] "
+          />
+        </form>
+        <button className="text-black border-2  flex items-center rounded-md text-sm px-6 py-2 text-center  mb-2 gap-2">
+          <BsCalendar2Date />
+          Date
+        </button>
+        <button className="text-black border-2   rounded-md text-sm px-6 py-2 text-center mb-2">
+          Filter
+        </button>
       </div>
-    </>
+      <table className="w-full flex-wrap">
+        <thead className="bg-gray-200 border-b-2 border-gray-200">
+          <tr>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Serial No.
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Booking Id
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Service Type
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Booking Time
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Customer Name
+            </th>
+
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Mobile
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Payment Status
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Status
+            </th>
+          </tr>
+        </thead>
+        <tbody>{bookingList}</tbody>
+      </table>
+      {renderPagination()}
+    </div>
   );
+}
+ */
+
+import React, { useState, useEffect } from "react";
+import { BsCalendar2Date } from "react-icons/bs";
+
+const generateRandomBookingNumber = () => {
+  const length = 8;
+  const characters = "0123456789";
+  let bookingNumber = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    bookingNumber += characters.charAt(randomIndex);
+  }
+
+  return bookingNumber;
 };
 
-export default Booking;
+export default function Booking() {
+  const [booking, setBooking] = useState([]);
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        const data = await response.json();
+        setBooking(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!booking) return null; // Check if booking data is not available
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = booking.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(booking.length / itemsPerPage);
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPagination = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button key={i} onClick={() => handleChangePage(i)}>
+          {i}
+        </button>
+      );
+    }
+    return (
+      <div className="pagination flex items-center justify-center px-3 h-8 w-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        {pageNumbers}
+      </div>
+    );
+  };
+
+  const bookingList = currentItems
+    .filter((val) => {
+      return search === "" ? val : val.name.includes(search);
+    })
+    .map((val, index) => (
+      <tr key={val.id}>
+        <td className="text-left bg-white p-3">{index + 1}</td>
+        <td className="text-left bg-white p-3">
+          {generateRandomBookingNumber()}
+        </td>
+        <td className="text-left bg-white p-3">{val.service || ""}</td>
+        <td className="text-left bg-white p-3">{val.bookingTime || ""}</td>
+        <td className="text-left bg-white p-3">{val.name || ""}</td>
+        <td className="text-left bg-white p-3">{val.mobile || ""}</td>
+        <td className="text-left bg-white p-3">{val.payment || ""}</td>
+        <td className="text-left bg-white p-3">
+          <button className="text-white bg-green-700   font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 ">
+            Active
+          </button>
+        </td>
+      </tr>
+    ));
+
+  return (
+    <div className="details px-8 h-screen py-10">
+      <div className="flex justify-end p-1 gap-8">
+        <form>
+          <input
+            type="search"
+            placeholder="Search"
+            onChange={(e) => setSearch(e.target.value)}
+            className=" relative  block min-w-0 flex-auto rounded border-2 border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] "
+          />
+        </form>
+        <button className="text-black border-2  flex items-center rounded-md text-sm px-6 py-2 text-center  mb-2 gap-2">
+          <BsCalendar2Date />
+          Date
+        </button>
+        <button className="text-black border-2   rounded-md text-sm px-6 py-2 text-center mb-2">
+          Filter
+        </button>
+      </div>
+      <table className="w-full flex-wrap">
+        <thead className="bg-gray-200 border-b-2 border-gray-200">
+          <tr>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Serial No.
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Booking Id
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Service Type
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Booking Time
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Customer Name
+            </th>
+
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Mobile
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Payment Status
+            </th>
+            <th className="p-3 text-sm font-semibold tracking-wide text-left w-1/7">
+              Status
+            </th>
+          </tr>
+        </thead>
+        <tbody>{bookingList}</tbody>
+      </table>
+      {renderPagination()}
+    </div>
+  );
+}

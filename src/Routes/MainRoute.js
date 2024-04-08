@@ -11,10 +11,13 @@ import Home from "../Pages/Home/Home";
 import ProtectedRoute from "../Routes/ProtectedRoute";
 import { UserAuthContextProvider } from "../context/UserAuthContext";
 import Navbar from "../components/Navbar/Navbar";
-import Users from "../components/Tabs/Users"
-import User from "../Pages/Users/User"
+import Users from "../components/Tabs/Users";
+import User from "../Pages/Users/User";
 import Partner from "../Pages/Users/Partner";
 import Block from "../Pages/Users/Block";
+import Booking from "../Pages/Booking/Booking";
+import Bookings from "../components/Tabs/Bookings";
+import VetBooking from "../Pages/Booking/VetBooking";
 
 const MainRoute = () => {
   return (
@@ -32,13 +35,30 @@ const MainRoute = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="Users" element={<ProtectedRoute>
-              <Users />
-            </ProtectedRoute>}>
+            <Route
+              path="Users"
+              element={
+                <ProtectedRoute>
+                  <Users />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<Navigate replace to="User" />} />
               <Route path="User" element={<User />} />
               <Route path="Partner" element={<Partner />} />
               <Route path="Block" element={<Block />} />
+            </Route>
+            <Route
+              path="Bookings"
+              element={
+                <ProtectedRoute>
+                  <Bookings />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="Booking" />} />
+              <Route path="Booking" element={<Booking />} />
+              <Route path="VetBooking" element={<VetBooking />} />
             </Route>
 
             <Route path="/Signup" element={<Signup />} />

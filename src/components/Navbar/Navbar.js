@@ -35,7 +35,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/Booking" className={Lankness("Booking")}>
+            <Link to="/Bookings" className={Lankness("Booking")}>
               Bookings
             </Link>
           </li>
@@ -100,5 +100,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
