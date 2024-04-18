@@ -18,6 +18,7 @@ import Block from "../Pages/Users/Block";
 import Booking from "../Pages/Booking/Booking";
 import Bookings from "../components/Tabs/Bookings";
 import VetBooking from "../Pages/Booking/VetBooking";
+import Profiles from "../Pages/Profile/Profiles";
 
 const MainRoute = () => {
   return (
@@ -60,6 +61,15 @@ const MainRoute = () => {
               <Route path="Booking" element={<Booking />} />
               <Route path="VetBooking" element={<VetBooking />} />
             </Route>
+
+            <Route
+              path="Profiles"
+              element={
+                <ProtectedRoute>
+                  <Profiles />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/Signup" element={<Signup />} />
           </Routes>

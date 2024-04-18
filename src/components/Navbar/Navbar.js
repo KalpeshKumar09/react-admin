@@ -2,6 +2,7 @@ import "./navbar.css";
 import { Link, useLocation } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
+import { useUserAuth } from "../../context/UserAuthContext";
 
 const Navbar = () => {
   let { pathname } = useLocation();
@@ -18,6 +19,16 @@ const Navbar = () => {
 
     return classes;
   }
+
+  const { logOut } = useUserAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <nav className="flex items-center justify-between px-0 h-20">
@@ -40,12 +51,12 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/" className={Lankness("Products")}>
+            <Link to="/Products" className={Lankness("Products")}>
               Products
             </Link>
           </li>
           <li>
-            <Link to="/" className={Lankness("Orders")}>
+            <Link to="/Orders" className={Lankness("Orders")}>
               Orders
             </Link>
           </li>
@@ -60,12 +71,12 @@ const Navbar = () => {
           </span>
           <div className="flex items-center justify-center p-3">
             <div className="relative inline-block text-left dropdown">
-              <span className="rounded-md shadow-lg">
+              <span className="rounded-md ">
                 <button
-                  className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800"
+                  className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out  rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue  active:text-gray-800"
                   type="button"
                 >
-                  <span className="text-2xl">
+                  <span className="text-3xl text-red">
                     <CgProfile />
                   </span>
                 </button>
@@ -77,12 +88,14 @@ const Navbar = () => {
                 >
                   <div className="py-1">
                     <Link
+                      to="/Profiles"
                       tabIndex="2"
                       className="flex justify-between w-full px-4 py-2 text-sm leading-5 text-left text-black-700 cursor-pointer"
                     >
                       Profile
                     </Link>
                     <Link
+                      onClick={handleLogout}
                       tabIndex="2"
                       className="text-gray-700 flex justify-between w-full px-4 py-2 text-sm leading-5 text-left cursor-pointer"
                     >
