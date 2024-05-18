@@ -6,11 +6,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "../components/Login/Login";
-import Signup from "../components/Signup/Signup";
 import Home from "../Pages/Home/Home";
-import ProtectedRoute from "../Routes/ProtectedRoute";
-import { UserAuthContextProvider } from "../context/UserAuthContext";
 import Navbar from "../components/Navbar/Navbar";
+import PublicRoute from "../Routes/PublicRoute";
+import ProtectedRoute from "../Routes/PublicRoute";
 import Users from "../components/Tabs/Users";
 import User from "../Pages/Users/User";
 import Partner from "../Pages/Users/Partner";
@@ -18,63 +17,32 @@ import Block from "../Pages/Users/Block";
 import Booking from "../Pages/Booking/Booking";
 import Bookings from "../components/Tabs/Bookings";
 import VetBooking from "../Pages/Booking/VetBooking";
-import Profiles from "../Pages/Profile/Profiles";
 
 const MainRoute = () => {
   return (
     <>
-      <UserAuthContextProvider>
-        <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route
-              path="/Home"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="Users"
-              element={
-                <ProtectedRoute>
-                  <Users />
-                </ProtectedRoute>
-              }
-            >
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/Login" element={<Login />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/Home" element={<Home />} />
+            <Route path="Users" element={<Users />}>
               <Route index element={<Navigate replace to="User" />} />
               <Route path="User" element={<User />} />
               <Route path="Partner" element={<Partner />} />
               <Route path="Block" element={<Block />} />
             </Route>
-            <Route
-              path="Bookings"
-              element={
-                <ProtectedRoute>
-                  <Bookings />
-                </ProtectedRoute>
-              }
-            >
+            <Route path="Bookings" element={<Bookings />}>
               <Route index element={<Navigate replace to="Booking" />} />
               <Route path="Booking" element={<Booking />} />
               <Route path="VetBooking" element={<VetBooking />} />
             </Route>
-
-            <Route
-              path="Profiles"
-              element={
-                <ProtectedRoute>
-                  <Profiles />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="/Signup" element={<Signup />} />
-          </Routes>
-        </Router>
-      </UserAuthContextProvider>
+          </Route>
+        </Routes>
+      </Router>
     </>
   );
 };

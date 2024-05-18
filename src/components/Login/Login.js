@@ -1,26 +1,17 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useUserAuth } from "../../context/UserAuthContext";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-
-  const [errors, setErrors] = useState({});
-
-  const { logIn } = useUserAuth();
+  // const [email, setEmail] = useState();
+  // const [password, setPassword] = useState();
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setErrors("");
-    try {
-      await logIn(email, password);
-      navigate("/Home");
-    } catch (error) {
-      setErrors(error.message);
-    }
+    /*   console.log(email + password); */
+    localStorage.setItem("user", "test");
+    navigate("/Home");
   };
 
   return (
@@ -125,7 +116,7 @@ const Login = () => {
                 name="email"
                 placeholder="Email"
                 required
-                onChange={(e) => setEmail(e.target.value)}
+                /*   onChange={(e) => setEmail(e.target.value)} */
               />
             </div>
 
@@ -137,7 +128,7 @@ const Login = () => {
                 className="block  py-1 px-2 w-96 text-sm text-center text-gray-900 bg-transparent  border-b-2 border-gray-300  dark:text-black  dark:focus:border-indigo-500 focus:outline-none focus:ring-0 focus:border-blue-600"
                 placeholder="Password"
                 required
-                onChange={(e) => setPassword(e.target.value)}
+                /*  onChange={(e) => setPassword(e.target.value)} */
               />
             </div>
 

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const BookingNav = () => {
   let { pathname } = useLocation();
-  let subbase = pathname.split("/")[2] || "All Bookings"; // Changed the index to 2
+  let subbase = pathname.split("/")[3] || "All Bookings"; // Changed the index to 2
 
   function Lankness(type = null) {
     let classes = "flex-auto self-stretch my-auto rounded px-2 py-1";
