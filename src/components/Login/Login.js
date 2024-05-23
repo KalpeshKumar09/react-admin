@@ -1,22 +1,23 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../Routes/AuthContext";
 
 const Login = () => {
   // const [email, setEmail] = useState();
   // const [password, setPassword] = useState();
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    /*   console.log(email + password); */
-    localStorage.setItem("user", "test");
+    login();
     navigate("/Home");
   };
 
   return (
     <div className="flex justify-center items-center px-16 py-12 text-lg font-medium whitespace-nowrap bg-white text-zinc-700 max-md:px-5">
-      <div className="flex flex-col items-center px-16 pt-5 pb-12 mt-10 max-w-full bg-white rounded-md shadow-lg w-[846px] max-md:px-5 max-md:mt-10">
+      <div className="flex flex-col items-center justify-center px-16 pt-5 pb-12 mt-10 max-w-full bg-white rounded-md border-2 border-white shadow-2xl w-[846px] max-md:px-5 max-md:mt-10">
         <div className="flex flex-col mb-2 max-w-full w-[550px]">
           <svg
             className="self-center max-w-full aspect-[3.85] w-[213px]"
@@ -134,7 +135,7 @@ const Login = () => {
 
             <div>
               <div className="text-right text-sm py-3">
-                {/* <Link to="/Signup">Forgot Password?</Link>  */}
+                <Link to="">Forgot Password?</Link>
               </div>
               <button
                 type="submit"

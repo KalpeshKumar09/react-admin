@@ -1,19 +1,11 @@
 import React from "react";
-
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
-const useAuth = () => {
-  const user = localStorage.getItem("user");
-  if (user) {
-    return true;
-  } else {
-    return false;
-  }
+const PublicRoute = () => {
+  const { isAuthenticated } = useAuth();
+
+  return isAuthenticated ? <Navigate to="/Home" /> : <Outlet />;
 };
 
-const ProtectedRoute = () => {
-  const auth = useAuth();
-  return auth ? <Navigate to="/Home" /> : <Outlet />;
-};
-
-export default ProtectedRoute;
+export default PublicRoute;

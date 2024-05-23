@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BsCalendar2Date } from "react-icons/bs";
+import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const generateRandomBookingNumber = () => {
   const length = 8;
@@ -19,6 +21,7 @@ export default function Booking() {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +43,19 @@ export default function Booking() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = booking.slice(indexOfFirstItem, indexOfLastItem);
+
+  const filteredUsers = booking.filter((val) => {
+    const userDate = new Date(val.date);
+    if (selectedDate) {
+      return (
+        (!search || val.name.includes(search)) &&
+        userDate.toDateString() === selectedDate.toDateString()
+      );
+    }
+    return !search || val.name.includes(search);
+  });
+
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(booking.length / itemsPerPage);
 
@@ -58,8 +73,10 @@ export default function Booking() {
       );
     }
     return (
-      <div className="pagination flex items-center justify-center px-3 h-8 w-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-        {pageNumbers}
+      <div className="flex justify-center items-center py-4">
+        <div className="pagination flex items-center justify-center px-3 h-8 w-4 border-2 border-gray-400 shadow-2xl rounded-md text-black">
+          {pageNumbers}
+        </div>
       </div>
     );
   };
@@ -76,7 +93,9 @@ export default function Booking() {
         </td>
         <td className="text-left bg-white p-3">{val.service || ""}</td>
         <td className="text-left bg-white p-3">{val.bookingTime || ""}</td>
-        <td className="text-left bg-white p-3">{val.name || ""}</td>
+        <td className="text-left bg-white p-3">
+          <Link to={`/BookingProfile/${val.id}`}>{val.name}</Link>
+        </td>
         <td className="text-left bg-white p-3">{val.mobile || ""}</td>
         <td className="text-left bg-white p-3">{val.payment || ""}</td>
         <td className="text-left bg-white p-3">
@@ -95,12 +114,52 @@ export default function Booking() {
             type="search"
             placeholder="Search"
             onChange={(e) => setSearch(e.target.value)}
-            className=" relative  block min-w-0 flex-auto rounded border-2 border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] "
+            className="    min-w-0 flex-auto rounded border-2 border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] "
           />
         </form>
-        <button className="text-black border-2  flex items-center rounded-md text-sm px-6 py-2 text-center  mb-2 gap-2">
-          <BsCalendar2Date />
-          Date
+        <button className="text-black border-2 flex items-center rounded-md text-sm px-2 text-center">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 4.5H5C3.89543 4.5 3 5.39543 3 6.5V20.5C3 21.6046 3.89543 22.5 5 22.5H19C20.1046 22.5 21 21.6046 21 20.5V6.5C21 5.39543 20.1046 4.5 19 4.5Z"
+              stroke="#404147"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M16 2.5V6.5"
+              stroke="#404147"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 2.5V6.5"
+              stroke="#404147"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3 10.5H21"
+              stroke="#404147"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            className="text-black text-sm text-center rounded-sm w-24"
+            placeholderText="Select Date"
+          />
         </button>
         <button className="text-black border-2   rounded-md text-sm px-6 py-2 text-center mb-2">
           Filter
